@@ -3,31 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <style>
-        /* ==================== 加载界面样式 ==================== */
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: black;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2em;
-            z-index: 9999;
-            opacity: 1;
-            transition: opacity 0.5s ease-in-out;
-        }
-        /* 加载完毕后，将该类添加到 loader 元素上 */
-        #loader.fade-out {
-            opacity: 0;
-            pointer-events: none; /* 确保它消失后不再拦截点击事件 */
-        }
-
+    <title></title> <style>
         /* ==================== 字体设置 ==================== */
         @font-face {
             font-family: 'IBMPlexSansSC-Bold';
@@ -155,8 +131,6 @@
 </head>
 <body>
 
-    <div id="loader">加载中...</div>
-
     <div id="background-image"></div>
     
     <div id="gif-container">
@@ -182,46 +156,46 @@
     </div>
 
     <script>
-        window.onload = function() {
-            const loader = document.getElementById('loader');
-            const gifContainer = document.getElementById('gif-container');
-            const backgroundImage = document.getElementById('background-image');
-            const contentContainer = document.getElementById('content-container');
-            const emailToggle = document.getElementById('email-toggle');
-            const emailText = document.getElementById('email-text');
+        const gifContainer = document.getElementById('gif-container');
+        const backgroundImage = document.getElementById('background-image');
+        const contentContainer = document.getElementById('content-container');
+        const emailToggle = document.getElementById('email-toggle');
+        const emailText = document.getElementById('email-text');
+        
+        const gifDuration = 2000; /* GIF 播放时长 */
+        const fadeDuration = 500; /* GIF 淡出时长 */
+
+        // ==================== 设备检测与背景设置 ====================
+        // 使用正则表达式检测是否为移动设备
+        const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        // 根据检测结果设置背景图片
+        if (isMobile) {
+            backgroundImage.style.backgroundImage = "url('gs-mobile.jpg')";
+        } else {
+            backgroundImage.style.backgroundImage = "url('gs.jpg')";
+        }
+        // ==========================================================
+
+        // 页面加载后的主动画
+        setTimeout(() => {
+            // GIF 容器开始淡出
+            gifContainer.classList.add('hidden');
             
-            const gifDuration = 2000;
-            const fadeDuration = 500;
+            // 立即触发背景的遮罩动画
+            backgroundImage.classList.add('revealed');
 
-            // ==================== 设备检测与背景设置 ====================
-            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
-            backgroundImage.style.backgroundImage = `url('${bgImageSrc}')`;
-            // ==========================================================
-
-            // 隐藏加载界面并开始动画
-            loader.classList.add('fade-out');
-
-            // 主页面动画
+            // 等待 GIF 淡出完成后，显示内容
             setTimeout(() => {
-                // GIF 容器开始淡出
-                gifContainer.classList.add('hidden');
-                
-                // 立即触发背景的遮罩动画
-                backgroundImage.classList.add('revealed');
+                gifContainer.style.display = 'none';
+                contentContainer.style.display = 'flex';
+            }, fadeDuration);
+        }, gifDuration);
 
-                // 等待 GIF 淡出完成后，显示内容
-                setTimeout(() => {
-                    gifContainer.style.display = 'none';
-                    contentContainer.style.display = 'flex';
-                }, fadeDuration);
-            }, gifDuration);
-
-            // 邮箱图标点击事件
-            emailToggle.addEventListener('click', () => {
-                emailText.classList.toggle('visible');
-            });
-        };
+        // 邮箱图标点击事件
+        emailToggle.addEventListener('click', () => {
+            emailText.classList.toggle('visible');
+        });
     </script>
 
 </body>
