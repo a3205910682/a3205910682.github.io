@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神秘的电话</title>
+    <style>
+        /* 确保页面占满整个视口，背景为纯黑 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        /* GIF 容器，用于居中显示动画 */
+        #gif-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #gif-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 确保 GIF 居中且不超出容器 */
+        #gif-animation {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* 号码和按钮容器，初始时隐藏 */
+        #number-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* 号码样式，字体较小 */
+        #number-container h1 {
+            font-size: 3em;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: fadeIn 2s forwards;
+        }
+
+        /* 淡入动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 右上角圆形按钮样式 */
+        .corner-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 60px; /* 设置宽度和高度一致以确保是正圆 */
+            height: 60px;
+            border-radius: 50%; /* 将边框半径设置为 50% 实现圆形 */
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid white;
+            text-decoration: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            display: flex; /* 使用 Flexbox 居中文字 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .corner-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gif-container">
+        <img id="gif-animation" src="./my-animation.gif" alt="动画加载中">
+    </div>
+
+    <div id="number-container">
+        <h1>3205910682</h1>
+        <a href="https://www.example.com" class="corner-button" target="_blank">按钮</a>
+    </div>
+
+    <script>
+        const gifContainer = document.getElementById('gif-container');
+        const numberContainer = document.getElementById('number-container');
+
+        // 设置动画播放时长为 1 秒
+        const animationDuration = 1000; 
+
+        setTimeout(() => {
+            // 隐藏 GIF 容器
+            gifContainer.classList.add('hidden');
+
+            // 在隐藏动画结束后（1秒过渡）显示号码和按钮
+            setTimeout(() => {
+                gifContainer.style.display = 'none';
+                numberContainer.style.display = 'flex';
+            }, 1000); 
+        }, animationDuration);
+    </script>
+
+</body>
+</html>
