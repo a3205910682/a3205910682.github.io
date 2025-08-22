@@ -182,29 +182,46 @@
     </div>
 
     <script>
-        window.onload = function() {
-            const loader = document.getElementById('loader');
-            const gifContainer = document.getElementById('gif-container');
-            const gifAnimation = document.getElementById('gif-animation');
-            const backgroundImage = document.getElementById('background-image');
-            const contentContainer = document.getElementById('content-container');
-            const emailToggle = document.getElementById('email-toggle');
-            const emailText = document.getElementById('email-text');
+        // 定义一个异步加载函数，通过 Promise 等待图片加载完成
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error(`Failed to load image at ${src}`));
+                img.src = src;
+            });
+        }
+
+        const loader = document.getElementById('loader');
+        const gifContainer = document.getElementById('gif-container');
+        const gifAnimation = document.getElementById('gif-animation');
+        const backgroundImage = document.getElementById('background-image');
+        const contentContainer = document.getElementById('content-container');
+        const emailToggle = document.getElementById('email-toggle');
+        const emailText = document.getElementById('email-text');
+        
+        const gifDuration = 2000;
+        const fadeDuration = 500;
+
+        // ==================== 资源预加载与设备检测 ====================
+        const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
+
+        // 创建 Promise 数组，等待所有关键资源加载完毕
+        Promise.all([
+            loadImage(bgImageSrc),
+            loadImage(gifAnimation.dataset.src)
+        ]).then(() => {
+            // 所有资源都已加载完成
             
-            const gifDuration = 2000;
-            const fadeDuration = 500;
-
-            // ==================== 设备检测与背景设置 ====================
-            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
-            backgroundImage.style.backgroundImage = `url('${bgImageSrc}')`;
-            // ==========================================================
-
-            // 在所有资源加载完毕后，设置GIF的src属性，开始播放
-            gifAnimation.src = gifAnimation.dataset.src;
-
-            // 隐藏加载界面并开始动画
+            // 隐藏加载界面
             loader.classList.add('fade-out');
+
+            // 设置背景图片
+            backgroundImage.style.backgroundImage = `url('${bgImageSrc}')`;
+            
+            // 设置GIF的src，使其开始播放
+            gifAnimation.src = gifAnimation.dataset.src;
 
             // 主页面动画
             setTimeout(() => {
@@ -221,11 +238,17 @@
                 }, fadeDuration);
             }, gifDuration);
 
-            // 邮箱图标点击事件
-            emailToggle.addEventListener('click', () => {
-                emailText.classList.toggle('visible');
-            });
-        };
+        }).catch(error => {
+            // 如果资源加载失败，显示错误信息
+            console.error('资源加载失败:', error);
+            loader.textContent = '加载失败';
+            // 您也可以在这里添加其他错误处理逻辑
+        });
+
+        // 邮箱图标点击事件
+        emailToggle.addEventListener('click', () => {
+            emailText.classList.toggle('visible');
+        });
     </script>
 
 </body>
