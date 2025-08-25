@@ -15,6 +15,7 @@
             background-color: black;
             color: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-size: 2em;
@@ -26,6 +27,25 @@
         #loader.fade-out {
             opacity: 0;
             pointer-events: none; /* 确保它消失后不再拦截点击事件 */
+        }
+
+        /* 跳过按钮样式 */
+        #skip-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            padding: 8px 16px;
+            font-size: 0.8em;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #skip-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
         }
 
         /* ==================== 字体设置 ==================== */
@@ -56,11 +76,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* 背景图片将由 JavaScript 动态设置 */
             background-size: cover;
             background-position: center;
-            
-            /* 动画遮罩效果 */
             mask-image: radial-gradient(circle, white, transparent 30%);
             mask-size: 0% 0%;
             mask-position: center;
@@ -68,7 +85,6 @@
             transition: mask-size 1.5s ease-in-out;
         }
         
-        /* 触发背景动画的类 */
         #background-image.revealed {
             mask-size: 400% 400%;
         }
@@ -123,7 +139,6 @@
             transition: opacity 0.5s ease-in-out;
         }
 
-        /* 邮箱文本可见时的样式 */
         #email-text.visible {
             opacity: 1;
         }
@@ -155,7 +170,10 @@
 </head>
 <body>
 
-    <div id="loader">Loading...</div>
+    <div id="loader">
+        <span>Loading...</span>
+        <button id="skip-button">跳过</button>
+    </div>
 
     <div id="background-image"></div>
     
@@ -193,6 +211,7 @@
         }
 
         const loader = document.getElementById('loader');
+        const skipButton = document.getElementById('skip-button');
         const gifContainer = document.getElementById('gif-container');
         const gifAnimation = document.getElementById('gif-animation');
         const backgroundImage = document.getElementById('background-image');
@@ -203,21 +222,19 @@
         const gifDuration = 2000;
         const fadeDuration = 500;
 
-        // ==================== 资源预加载与设备检测 ====================
-        const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
+        let animationStarted = false;
 
-        // 创建 Promise 数组，等待所有关键资源加载完毕
-        Promise.all([
-            loadImage(bgImageSrc),
-            loadImage(gifAnimation.dataset.src)
-        ]).then(() => {
-            // 所有资源都已加载完成
-            
+        // 启动主页面动画的函数
+        function startMainAnimation() {
+            if (animationStarted) return;
+            animationStarted = true;
+
             // 隐藏加载界面
             loader.classList.add('fade-out');
-
-            // 设置背景图片
+            
+            // 确保背景图已设置
+            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
             backgroundImage.style.backgroundImage = `url('${bgImageSrc}')`;
             
             // 设置GIF的src，使其开始播放
@@ -237,17 +254,33 @@
                     contentContainer.style.display = 'flex';
                 }, fadeDuration);
             }, gifDuration);
+        }
 
+        // ==================== 资源预加载与设备检测 ====================
+        const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
+
+        // 等待GIF和选定的背景图加载完毕
+        Promise.all([
+            loadImage(bgImageSrc),
+            loadImage(gifAnimation.dataset.src)
+        ]).then(() => {
+            // 所有资源都已加载完成，启动动画
+            startMainAnimation();
         }).catch(error => {
             // 如果资源加载失败，显示错误信息
             console.error('资源加载失败:', error);
             loader.textContent = '加载失败';
-            // 您也可以在这里添加其他错误处理逻辑
         });
 
         // 邮箱图标点击事件
         emailToggle.addEventListener('click', () => {
             emailText.classList.toggle('visible');
+        });
+
+        // 跳过按钮点击事件
+        skipButton.addEventListener('click', () => {
+            startMainAnimation();
         });
     </script>
 
