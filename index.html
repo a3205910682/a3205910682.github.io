@@ -26,7 +26,7 @@
         /* 加载完毕后，将该类添加到 loader 元素上 */
         #loader.fade-out {
             opacity: 0;
-            pointer-events: none; /* 确保它消失后不再拦截点击事件 */
+            pointer-events: none;
         }
 
         /* 跳过按钮样式 */
@@ -35,8 +35,8 @@
             bottom: 20px;
             right: 20px;
             z-index: 10000;
-            padding: 8px 16px;
-            font-size: 0.8em;
+            padding: 5px 10px; /* 调整了尺寸 */
+            font-size: 0.7em; /* 字体更小 */
             color: white;
             background-color: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.5);
@@ -172,7 +172,7 @@
 
     <div id="loader">
         <span>Loading...</span>
-        <button id="skip-button">跳过</button>
+        <button id="skip-button">Skip</button>
     </div>
 
     <div id="background-image"></div>
@@ -231,29 +231,25 @@
 
             // 隐藏加载界面
             loader.classList.add('fade-out');
-            
-            // 确保背景图已设置
-            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
-            backgroundImage.style.backgroundImage = `url('${bgImageSrc}')`;
-            
-            // 设置GIF的src，使其开始播放
-            gifAnimation.src = gifAnimation.dataset.src;
 
-            // 主页面动画
+            // 延迟200毫秒再开始播放动画
             setTimeout(() => {
-                // GIF 容器开始淡出
-                gifContainer.classList.add('hidden');
-                
-                // 立即触发背景的遮罩动画
-                backgroundImage.classList.add('revealed');
+                const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const bgImageSrc = isMobile ? 'gs-mobile.jpg' : 'gs.jpg';
+                backgroundImage.style.backgroundImage = `url('${bgImageSrc}')`;
+                gifAnimation.src = gifAnimation.dataset.src;
 
-                // 等待 GIF 淡出完成后，显示内容
+                // 主页面动画
                 setTimeout(() => {
-                    gifContainer.style.display = 'none';
-                    contentContainer.style.display = 'flex';
-                }, fadeDuration);
-            }, gifDuration);
+                    gifContainer.classList.add('hidden');
+                    backgroundImage.classList.add('revealed');
+
+                    setTimeout(() => {
+                        gifContainer.style.display = 'none';
+                        contentContainer.style.display = 'flex';
+                    }, fadeDuration);
+                }, gifDuration);
+            }, 200);
         }
 
         // ==================== 资源预加载与设备检测 ====================
